@@ -1,0 +1,11 @@
+1)You have to install "Python 3", "pip" and "virtualenv" also.
+After that you activate the virtual environment.
+Refer at: https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/
+
+2)Install package:
+pip install -r requirements.txt
+->You can get requirements.txt from Backend folder
+
+3)Navigate to src/
+Run command: python manage.py runserver
+Check whether it works properly by using Postman or opening browser: http://127.0.0.1:8000/ to check
