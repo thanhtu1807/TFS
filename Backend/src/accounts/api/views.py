@@ -61,7 +61,5 @@ def reset_token(request):
     return Response({
         'token': token.key,
         'user_id': token.user.pk,
-        'role': token.user.role.role_name,
-        # 'email': user.users,
         'full_name': token.user.get_full_name(),
     })
