@@ -37,8 +37,6 @@ class CustomObtainAuthToken(ObtainAuthToken):
 
         return Response({
             'token': token.key,
-            'user_id': user.pk,
-            'full_name': user.get_full_name(),
         })
 
 
@@ -60,6 +58,4 @@ def reset_token(request):
     token = Token.objects.create(user=request.user)
     return Response({
         'token': token.key,
-        'user_id': token.user.pk,
-        'full_name': token.user.get_full_name(),
     })
