@@ -38,7 +38,6 @@ class CustomObtainAuthToken(ObtainAuthToken):
         return Response({
             'token': token.key,
             'user_id': user.pk,
-            'role': user.role.role_name,
             'full_name': user.get_full_name(),
         })
 

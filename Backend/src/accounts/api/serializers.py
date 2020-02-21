@@ -36,4 +36,4 @@ class RoleSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('id', 'group_name', 'parent_id')
+        fields = ('id', 'group_name')
