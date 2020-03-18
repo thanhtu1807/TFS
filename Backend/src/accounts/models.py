@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -40,8 +40,10 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    role = models.ForeignKey('Role', related_name='role_user', on_delete=models.CASCADE, null=True, to_field='role_name')
-    group = models.ForeignKey('Group', related_name='group_user', on_delete=models.CASCADE, null=True, to_field='group_name')
+    fullname = models.CharField(max_length=255, null=True, blank=True)
+    role = models.ForeignKey('Role', related_name='role_user', on_delete=models.CASCADE, null=True)
+    group = models.ForeignKey('Group', related_name='group_user', on_delete=models.CASCADE, null=True)
+    created_at = models.DateField(auto_now_add=True, editable=False)
     # email field is used as a username for authentication
     USERNAME_FIELD = 'email'
     # A list of the field names that will be prompted for when creating a user via the createsuperuser
@@ -62,7 +64,66 @@ class Role(models.Model):
 
 class Group(models.Model):
     group_name = models.CharField(max_length=255, null=False, unique=True)
-    parent_group = models.ForeignKey('self', on_delete=models.CASCADE, null=True, to_field='group_name')
+    parent_group = models.ForeignKey('self', related_name='groups', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f'{self.group_name}'
+
+
+class Function(models.Model):
+    function_name = models.CharField(max_length=255, null=False, unique=True)
+    role = models.ManyToManyField('Role', related_name='role_function', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.function_name}'
+
+
+class Topic_present(models.Model):
+    topic_name = models.CharField(max_length=255, null=False, unique=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.topic_name}'
+
+
+class Criteria(models.Model):
+    criteria_name = models.CharField(max_length=255, null=False, unique=True)
+
+    def __str__(self):
+        return f'{self.criteria_name}'
+
+
+class Appraisal_format(models.Model):
+    format_name = models.CharField(max_length=255, null=False)
+    criteria = models.ManyToManyField('Criteria', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.format_name}'
+
+
+class Session(models.Model):
+    presenter = models.ForeignKey('User', on_delete=models.CASCADE, null=True, blank=True)
+    topic = models.ForeignKey('Topic_present', on_delete=models.CASCADE, null=True, blank=True)
+    appraisal_format = models.ForeignKey('Appraisal_format', on_delete=models.CASCADE, null=True, blank=True)
+    date = models.DateField(auto_now_add=True, editable=False)
+    deadline = models.DateField()
+
+    class Meta:
+        unique_together = ('presenter', 'topic', 'appraisal_format')
+
+    def __str__(self):
+        return f'{self.topic}'
+
+
+class Appraisal(models.Model):
+    session = models.ForeignKey('Session', on_delete=models.CASCADE, null=True, blank=True)
+    attendee = models.ForeignKey('User', on_delete=models.CASCADE, null=True, blank=True)
+    criteria = models.ForeignKey('Criteria', on_delete=models.CASCADE, null=True, blank=True)
+    score = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)])
+    comment = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        unique_together = ('session', 'attendee', 'criteria')
+
+    def __str__(self):
+        return f'{self.id}'

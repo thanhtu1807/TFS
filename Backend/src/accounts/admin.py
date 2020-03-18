@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import ugettext_lazy as _
-from  .models import User, Role, Group
+from .models import User, Role, Group, Function, Topic_present, Criteria, Appraisal, Appraisal_format, Session
+
+
 # Register your models here.
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
@@ -24,5 +26,12 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 
+
 admin.site.register(Role)
 admin.site.register(Group)
+admin.site.register(Function)
+admin.site.register(Topic_present)
+admin.site.register(Criteria)
+admin.site.register(Appraisal)
+admin.site.register(Appraisal_format)
+admin.site.register(Session)
